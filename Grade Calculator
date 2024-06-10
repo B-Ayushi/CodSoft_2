@@ -1,0 +1,116 @@
+package codsoft;
+import java.util.Scanner;
+
+// Custom Exception Class
+class InvalidMarkException extends Exception {
+    public InvalidMarkException(String message) {
+        super(message);
+    }
+}
+
+class Grade {
+    Scanner sc = new Scanner(System.in);
+    String name;
+    double[] marks = new double[5];
+    double g;
+
+    void accept() throws InvalidMarkException {
+        System.out.println("Enter student's name");
+        name = sc.next();
+        System.out.println("Enter the marks of the student in five subjects");
+        for (int i = 0; i < 5; i++) {
+            marks[i] = sc.nextDouble();
+            if (marks[i] < 0 || marks[i] > 100) {
+                throw new InvalidMarkException("Invalid mark: " + marks[i] + ". Marks should be between 0 and 100.");
+            }
+        }
+    }
+
+    double calculate() {
+        double sum = 0;
+        for (double mark : marks) {
+            sum += mark;
+        }
+        g = sum / 5;
+        return g;
+    }
+
+    void display() throws Exception {  // Simulating a potential exception
+        calculate(); // Ensure the grade is calculated before displaying
+        if (g >= 9) {
+            System.out.println("GRADE: " + g + " - O (Outstanding)");
+        } else if (g >= 8) {
+            System.out.println("GRADE: " + g + " - A+ (Excellent)");
+        } else if (g >= 7) {
+            System.out.println("GRADE: " + g + " - A (Very Good)");
+        } else if (g >= 6) {
+            System.out.println("GRADE: " + g + " - B+ (Good)");
+        } else if (g >= 5) {
+            System.out.println("GRADE: " + g + " - B (Average)");
+        } else {
+            System.out.println("GRADE: " + g + " - F (Fail)");
+        }
+    }
+}
+
+public class Ass {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Grade[] students = null;
+        int n = 0;
+
+        while (true) {
+            System.out.println("MENU \n1) ACCEPT \n2) GRADE CALCULATION \n3) GRADE ASSIGNMENT \n4) EXIT");
+            System.out.println("Enter your choice");
+
+            int choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("Enter the number of students to enlist");
+                    n = sc.nextInt();
+                    students = new Grade[n];
+                    for (int i = 0; i < n; i++) {
+                        students[i] = new Grade();
+                        try {
+                            students[i].accept();
+                        } catch (InvalidMarkException e) {
+                            System.out.println(e.getMessage());
+                            // Optionally, re-try the input for the current student
+                            i--;
+                        }
+                    }
+                    break;
+                case 2:
+                    if (students != null) {
+                        for (int i = 0; i < n; i++) {
+                            students[i].calculate();
+                        }
+                        System.out.println("Grades calculated.");
+                    } else {
+                        System.out.println("No student data available. Please accept student data first.");
+                    }
+                    break;
+                case 3:
+                    if (students != null) {
+                        for (int i = 0; i < n; i++) {
+                            try {
+                                students[i].display();
+                            } catch (Exception e) {
+                                System.out.println("An error occurred while displaying grades: " + e.getMessage());
+                            }
+                        }
+                    } else {
+                        System.out.println("No student data available. Please accept student data first.");
+                    }
+                    break;
+                case 4:
+                    System.out.println("Exiting the program.");
+                    sc.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please enter a valid option.");
+            }
+        }
+    }
+}
